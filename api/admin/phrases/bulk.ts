@@ -20,9 +20,15 @@ const insertPhraseSchema = createInsertSchema(phrases).pick({
 // Configure WebSocket for Neon
 neonConfig.webSocketConstructor = globalThis.WebSocket || require('ws');
 
-// Initialize database connection
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-const db = drizzle({ client: pool });
+let db: any = null;
+
+function getDb() {
+  if (!db) {
+    const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+    db = drizzle({ client: pool });
+  }
+  return db;
+}
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
@@ -52,8 +58,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     // Insert phrases
+    const database = getDb();
     const phrasesToInsert = phraseContents.map(content => ({ content }));
-    const addedPhrases = await db
+    const addedPhrases = await database
       .insert(phrases)
       .values(phrasesToInsert)
       .returning();

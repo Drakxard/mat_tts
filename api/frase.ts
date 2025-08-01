@@ -23,18 +23,26 @@ const appConfig = pgTable("app_config", {
 neonConfig.webSocketConstructor = globalThis.WebSocket || require('ws');
 
 // Initialize database connection
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-const db = drizzle({ client: pool });
+let db: any = null;
+
+function getDb() {
+  if (!db) {
+    const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+    db = drizzle({ client: pool });
+  }
+  return db;
+}
 
 // Rate limiting constants
 const DAILY_LIMIT = 100;
 
-async function getAppConfig(): Promise<AppConfig> {
-  const [config] = await db.select().from(appConfig);
+async function getAppConfig() {
+  const database = getDb();
+  const [config] = await database.select().from(appConfig);
   
   if (!config) {
     // Create initial config if it doesn't exist
-    const [newConfig] = await db
+    const [newConfig] = await database
       .insert(appConfig)
       .values({
         currentPhraseIndex: 0,
@@ -48,7 +56,7 @@ async function getAppConfig(): Promise<AppConfig> {
   return config;
 }
 
-async function shouldResetDailyCount(): Promise<boolean> {
+async function shouldResetDailyCount() {
   const config = await getAppConfig();
   const today = new Date();
   const lastReset = new Date(config.lastResetDate);
@@ -56,9 +64,10 @@ async function shouldResetDailyCount(): Promise<boolean> {
   return today.toDateString() !== lastReset.toDateString();
 }
 
-async function resetDailyRequestCount(): Promise<void> {
+async function resetDailyRequestCount() {
+  const database = getDb();
   const config = await getAppConfig();
-  await db
+  await database
     .update(appConfig)
     .set({ 
       dailyRequestCount: 0,
@@ -67,19 +76,21 @@ async function resetDailyRequestCount(): Promise<void> {
     .where(eq(appConfig.id, config.id));
 }
 
-async function updateCurrentPhraseIndex(index: number): Promise<void> {
+async function updateCurrentPhraseIndex(index: number) {
+  const database = getDb();
   const config = await getAppConfig();
-  await db
+  await database
     .update(appConfig)
     .set({ currentPhraseIndex: index })
     .where(eq(appConfig.id, config.id));
 }
 
-async function incrementDailyRequestCount(): Promise<number> {
+async function incrementDailyRequestCount() {
+  const database = getDb();
   const config = await getAppConfig();
   const newCount = config.dailyRequestCount + 1;
   
-  await db
+  await database
     .update(appConfig)
     .set({ dailyRequestCount: newCount })
     .where(eq(appConfig.id, config.id));
@@ -87,13 +98,15 @@ async function incrementDailyRequestCount(): Promise<number> {
   return newCount;
 }
 
-async function getPhraseByIndex(index: number): Promise<Phrase | undefined> {
-  const allPhrases = await db.select().from(phrases).orderBy(asc(phrases.createdAt));
+async function getPhraseByIndex(index: number) {
+  const database = getDb();
+  const allPhrases = await database.select().from(phrases).orderBy(asc(phrases.createdAt));
   return allPhrases[index] || undefined;
 }
 
-async function getTotalPhrasesCount(): Promise<number> {
-  const result = await db.select({ count: phrases.id }).from(phrases);
+async function getTotalPhrasesCount() {
+  const database = getDb();
+  const result = await database.select({ count: phrases.id }).from(phrases);
   return result.length;
 }
 

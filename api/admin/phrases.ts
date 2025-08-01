@@ -15,21 +15,29 @@ const phrases = pgTable("phrases", {
 // Configure WebSocket for Neon
 neonConfig.webSocketConstructor = globalThis.WebSocket || require('ws');
 
-// Initialize database connection
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-const db = drizzle({ client: pool });
+let db: any = null;
+
+function getDb() {
+  if (!db) {
+    const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+    db = drizzle({ client: pool });
+  }
+  return db;
+}
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+  const database = getDb();
+  
   try {
     if (req.method === 'GET') {
       // Get all phrases
-      const allPhrases = await db.select().from(phrases).orderBy(asc(phrases.createdAt));
+      const allPhrases = await database.select().from(phrases).orderBy(asc(phrases.createdAt));
       return res.json(allPhrases);
     }
 
     if (req.method === 'DELETE') {
       // Delete all phrases
-      await db.delete(phrases);
+      await database.delete(phrases);
       return res.json({ message: 'All phrases deleted successfully' });
     }
 
