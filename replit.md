@@ -1,6 +1,6 @@
 # Overview
 
-This is a phrase management application built with a React frontend and Express backend. The app delivers inspirational phrases sequentially through a rate-limited API, featuring a public interface for consuming phrases and an admin dashboard for managing the phrase collection.
+This is a phrase management application built with a React frontend and Express backend. The app delivers inspirational phrases sequentially through a rate-limited API, featuring a public interface for consuming phrases and an admin dashboard for managing the phrase collection. The application is now configured for deployment on Vercel with serverless functions.
 
 # User Preferences
 
@@ -46,6 +46,11 @@ The application uses three main tables:
 - **Neon Database**: Serverless PostgreSQL hosting with connection pooling
 - **DATABASE_URL**: Environment variable for database connection string
 
+## Deployment Platform
+- **Vercel**: Serverless deployment platform with automatic builds
+- **@vercel/node**: Runtime for serverless functions
+- **vercel.json**: Configuration for routing and build settings
+
 ## UI Framework Dependencies
 - **Radix UI**: Headless component primitives for accessibility
 - **Tailwind CSS**: Utility-first CSS framework with custom design tokens
@@ -60,3 +65,11 @@ The application uses three main tables:
 - **Zod**: Runtime type validation and schema definition
 - **React Hook Form**: Performance-optimized form library
 - **Drizzle Zod**: Integration between Drizzle ORM and Zod schemas
+
+# Deployment Configuration
+
+## Vercel Setup
+- **API Routes**: Converted to serverless functions in `/server/api/` directory
+- **Static Build**: Frontend builds to `/dist` directory for static hosting
+- **Environment Variables**: `DATABASE_URL` required for database connection
+- **Routing**: Configured in `vercel.json` to handle API and static routes

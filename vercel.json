@@ -1,0 +1,36 @@
+{
+  "version": 2,
+  "buildCommand": "vite build",
+  "outputDirectory": "dist",
+  "functions": {
+    "server/api/**/*.ts": {
+      "runtime": "@vercel/node"
+    }
+  },
+  "routes": [
+    {
+      "src": "/api/frase",
+      "dest": "/server/api/frase"
+    },
+    {
+      "src": "/api/admin/stats",
+      "dest": "/server/api/admin/stats"
+    },
+    {
+      "src": "/api/admin/phrases",
+      "dest": "/server/api/admin/phrases"
+    },
+    {
+      "src": "/api/admin/phrases/bulk",
+      "dest": "/server/api/admin/phrases/bulk"
+    },
+    {
+      "src": "/api/admin/export",
+      "dest": "/server/api/admin/export"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ]
+}
