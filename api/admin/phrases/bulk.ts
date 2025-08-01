@@ -1,6 +1,6 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
-import { Pool, neonConfig } from '@neondatabase/serverless';
-import { drizzle } from 'drizzle-orm/neon-serverless';
+import { drizzle } from 'drizzle-orm/node-postgres';
+import { Pool } from 'pg';
 import { z } from 'zod';
 import { sql } from "drizzle-orm";
 import { pgTable, text, varchar, timestamp } from "drizzle-orm/pg-core";
@@ -17,15 +17,15 @@ const insertPhraseSchema = createInsertSchema(phrases).pick({
   content: true,
 });
 
-// Configure WebSocket for Neon
-neonConfig.webSocketConstructor = globalThis.WebSocket || require('ws');
-
 let db: any = null;
 
 function getDb() {
   if (!db) {
-    const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-    db = drizzle({ client: pool });
+    const pool = new Pool({
+      connectionString: process.env.DATABASE_URL || 'postgresql://postgres:password@localhost:5432/frase_app',
+      ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+    });
+    db = drizzle(pool, { schema: { phrases } });
   }
   return db;
 }

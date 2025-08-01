@@ -1,7 +1,51 @@
+# Dependencies
 node_modules
-.env*
+.npm
+
+# Development files
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Build artifacts
+dist
+.next
+
+# IDE files
+.vscode
+.idea
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Git
 .git
 .gitignore
-README.md
+
+# Replit specific
 .replit
 replit.nix
+.local
+
+# Server files (not needed for serverless)
+server/index.ts
+server/vite.ts
+server/routes.ts
+server/storage.ts
+server/db.ts
+
+# Development configs
+vite.config.ts
+tailwind.config.ts
+postcss.config.js
+drizzle.config.ts
+
+# Documentation
+README.md
+replit.md
+
+# Build scripts
+build.js
+vercel-build.js
