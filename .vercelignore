@@ -9,7 +9,6 @@ node_modules
 .env.production.local
 
 # Build artifacts
-dist
 .next
 
 # IDE files
@@ -30,11 +29,7 @@ replit.nix
 .local
 
 # Server files (not needed for serverless)
-server/index.ts
-server/vite.ts
-server/routes.ts
-server/storage.ts
-server/db.ts
+server/
 
 # Development configs
 vite.config.ts

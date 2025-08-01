@@ -43,13 +43,14 @@ The application uses three main tables:
 # External Dependencies
 
 ## Database Services
-- **Neon Database**: Serverless PostgreSQL hosting with connection pooling
+- **Replit PostgreSQL**: Local PostgreSQL database with standard pg driver
 - **DATABASE_URL**: Environment variable for database connection string
 
 ## Deployment Platform
-- **Vercel**: Serverless deployment platform with automatic builds
+- **Vercel**: Serverless deployment platform with automatic builds (Node.js 20.x)
 - **@vercel/node**: Runtime for serverless functions
-- **vercel.json**: Configuration for routing and build settings
+- **vercel.json**: Simplified configuration for static build output
+- **PostgreSQL**: Uses standard 'pg' driver for local database compatibility
 
 ## UI Framework Dependencies
 - **Radix UI**: Headless component primitives for accessibility
